@@ -9,7 +9,7 @@
 import UIKit
 
 class TableDelegate: Actions {
-    var tableModel: TableModel?
+    var tableModel: TableModel?        
     
     init(tableModel: TableModel?) {
         self.tableModel = tableModel
@@ -24,7 +24,7 @@ class TableDelegate: Actions {
         return self.createSectionViewForSectionObject(tableModel?.footerAtSection(section))
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
         var cellHeight = tableView.rowHeight
         if tableModel != nil {
             let object = tableModel!.objectAtPath(indexPath) as! TableCellObject
@@ -47,10 +47,10 @@ class TableDelegate: Actions {
         return 0
     }
     
-    private func createSectionViewForSectionObject(object: AnyObject?) -> UIView? {
+    private func createSectionViewForSectionObject(_ object: AnyObject?) -> UIView? {
         if let sectionObject = object as? TableSectionHeaderObject {
             let viewClass = sectionObject.viewClass()
-            let view = viewClass.init(frame: CGRectZero)
+            let view = viewClass.init(frame: .zero)
             if let headerView = view as? TableSectionHeaderView {
                 headerView.updateViewWithObject(sectionObject)
             }
@@ -59,7 +59,7 @@ class TableDelegate: Actions {
         return nil
     }
     
-    override func forwardingTargetForSelector(aSelector: Selector) -> AnyObject? {
+    override func forwardingTarget(for aSelector: Selector) -> Any? {
         return nil
     }
 }

@@ -14,8 +14,9 @@ import UIKit
 }
 
 @objc public protocol TableSectionHeaderView {
-    func updateViewWithObject(object: TableSectionHeaderObject)
-    static func tableView(tableView: UITableView, heightForObject object:TableSectionHeaderObject, atSection section:NSInteger)
+    func updateViewWithObject(_ object: TableSectionHeaderObject)
+    
+    static func tableView(_ tableView: UITableView, heightForObject object:TableSectionHeaderObject, atSection section:NSInteger)
 }
 
 typealias TableSectionFooterObject = TableSectionHeaderObject
@@ -23,13 +24,37 @@ typealias TableSectionFooterView = TableSectionHeaderView
 
 @objc public protocol TableCellObject {
     func tableCellClass() -> UITableViewCell.Type
-    optional func cellStyle() -> UITableViewCellStyle
-    optional func shouldAppendClassNameToReuseIdentifier() -> Bool
+    func cellStyle() -> UITableViewCellStyle
+    func reuseIdentifier() -> String?
+}
+
+extension TableCellObject {
+    func tableCellClass() -> UITableViewCell.Type {
+        return UITableViewCell.self
+    }
+    
+    func cellStyle() -> UITableViewCellStyle {
+        return UITableViewCellStyle.default
+    }
+    func reuseIdentifier() -> String? {
+        return nil
+    }
 }
 
 @objc public protocol TableCell {
-    func updateCellWithObject(object: TableCellObject)
-    static func tableView(tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:NSIndexPath) -> CGFloat;
+    func updateCellWithObject(_ object: TableCellObject) -> Bool
+    
+    static func tableView(_ tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:IndexPath) -> CGFloat;
+}
+
+extension TableCell {
+    func updateCellWithObject(object: TableCellObject) -> Bool {
+        return true
+    }
+    
+    static func tableView(_ tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:IndexPath) -> CGFloat {
+        return 44.0
+    }
 }
 
 /**
@@ -44,12 +69,13 @@ public class TableCellFactory : NSObject {
      Returns a singleton TableModelDelegate instance for use as a TableModel delegate.
      */
     public class func tableModelDelegate() -> TableModelDelegate {
-        return self.sharedInstance
+        return self.shared
     }
 }
 
 extension TableCellFactory : TableModelDelegate {
-    public func tableModel(tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: NSIndexPath, object: AnyObject) -> UITableViewCell? {
+    public func tableModel(_ tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: IndexPath, object: AnyObject) -> UITableViewCell? {
+        
         return self.cell(object.tableCellClass(), tableView: tableView, indexPath: indexPath, object: object as? TableCellObject)
     }
 }
@@ -60,47 +86,48 @@ extension TableCellFactory {
     /**
      Returns a cell for a given object.
      */
-    private func cell(tableCellClass: UITableViewCell.Type, tableView: UITableView, indexPath: NSIndexPath, object: TableCellObject?) -> UITableViewCell? {
-        if object == nil {
+    private func cell(_ tableCellClass: UITableViewCell.Type, tableView: UITableView, indexPath: IndexPath, object: TableCellObject?) -> UITableViewCell? {
+        guard let object = object else {
             return nil
         }
-        var style = UITableViewCellStyle.Default;
-        var identifier = NSStringFromClass(tableCellClass)
         
-        // Append object class to reuse identifier
-        
-        if (object!.shouldAppendClassNameToReuseIdentifier != nil) && object!.shouldAppendClassNameToReuseIdentifier!() {
-            let typedObject: AnyObject = object as! AnyObject
-            identifier = identifier.stringByAppendingString(NSStringFromClass(typedObject.dynamicType))
+        guard let identifier = cellIdentifier(tableCellClass, object: object) else {
+            return nil
         }
         
-        // Append cell style to reuse identifier
-        
-        if let objectCellStyle = object!.cellStyle?() {
-            style = objectCellStyle
-            identifier = identifier.stringByAppendingString(String(style.rawValue))
-        }
-        
+        let style = object.cellStyle()
+
         // Recycle or create the cell
-        
-        var cell = tableView.dequeueReusableCellWithIdentifier(identifier) as UITableViewCell?
+        var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
         if cell == nil {
             cell = tableCellClass.init(style: style, reuseIdentifier: identifier)
         }
         
         // Provide the object to the cell
         
-        if let tableCell = cell as! TableCell? {
-            tableCell.updateCellWithObject(object!)
+        if let tableCell = cell as? TableCell {
+            _ = tableCell.updateCellWithObject(object)
         }
         
         return cell!
+    }
+    
+    private func cellIdentifier(_ tableCellClass: UITableViewCell.Type, object: TableCellObject) -> String? {
+        var identifier = object.reuseIdentifier()
+        
+        // Append object class to reuse identifier
+        if identifier == nil {
+            identifier = NSStringFromClass(tableCellClass)
+            let style = object.cellStyle()
+            identifier!.append(String(style.rawValue))
+        }
+        return identifier
     }
 }
 
 // Singleton Pattern
 extension TableCellFactory {
-    private class var sharedInstance : TableCellFactory {
+    private class var shared : TableCellFactory {
         struct Singleton {
             static let instance = TableCellFactory()
         }

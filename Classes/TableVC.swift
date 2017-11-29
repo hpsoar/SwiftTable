@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CYTableViewController: UIViewController {
+class TableVC: UIViewController {
     var tableView: UITableView!
     
     var tableModel: TableModel? {
@@ -33,8 +33,8 @@ class CYTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView = UITableView(frame: view.bounds, style: .Plain)
-        tableView.tableFooterView = UIView(frame: CGRectZero)
+        tableView = UITableView(frame: view.bounds, style: .plain)
+        tableView.tableFooterView = UIView(frame: .zero)
         view.addSubview(tableView)
     }
 

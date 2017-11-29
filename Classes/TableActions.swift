@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 extension Actions {
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forObject object: NSObject, atIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, willDisplayCell cell: UITableViewCell, forObject object: NSObject, atIndexPath indexPath: IndexPath) -> Bool {
         if !self.isActionableObject(object) {
             return false
         }
@@ -21,47 +21,47 @@ extension Actions {
         return true
     }
     
-    func tableView(tableView: UITableView, didSelectObject object: NSObject, atIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectObject object: NSObject, atIndexPath indexPath: IndexPath) {
         let actions = self.actionsForObject(object)
         if !actions.hasActions() {
             return
         }
         
-        if let shouldDeselect = actions.performTapAction(object, indexPath: indexPath) {
+        if let shouldDeselect = actions.performTapAction(object: object, indexPath: indexPath) {
             if shouldDeselect {
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                tableView.deselectRow(at: indexPath, animated: true)
             }
         }
         
-        actions.performNavigateAction(object, indexPath: indexPath)
+        actions.performNavigateAction(object: object, indexPath: indexPath)
     }
     
-    func tableView(tableView: UITableView, accessoryButtonTappedForObject object: NSObject, withIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForObject object: NSObject, withIndexPath indexPath: IndexPath) {
         let actions = self.actionsForObject(object)
         if !actions.hasActions() {
             return
         }
-        actions.performDetailAction(object, indexPath: indexPath)
+        actions.performDetailAction(object: object, indexPath: indexPath)
     }
 }
 
 extension Actions : UITableViewDelegate {
-    public func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        cell.accessoryType = .None
-        cell.selectionStyle = .None
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.accessoryType = .none
+        cell.selectionStyle = .none
         
-        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
-            self.tableView(tableView, willDisplayCell: cell, forObject: object, atIndexPath: indexPath)
+        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {            
+            _ = self.tableView(tableView, willDisplayCell: cell, forObject: object, atIndexPath: indexPath)
         }
     }
     
-    public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
             self.tableView(tableView, didSelectObject: object, atIndexPath: indexPath)
         }
     }
     
-    public func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+    public func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
             self.tableView(tableView, accessoryButtonTappedForObject: object, withIndexPath: indexPath)
         }
@@ -70,25 +70,25 @@ extension Actions : UITableViewDelegate {
 
 // Private
 extension Actions {
-    private func accessoryTypeForObject(object: NSObject) -> UITableViewCellAccessoryType {
+    private func accessoryTypeForObject(_ object: NSObject) -> UITableViewCellAccessoryType {
         let actions = self.actionsForObject(object)
         if actions.hasDetailAction() {
-            return .DetailDisclosureButton
+            return .detailDisclosureButton
         } else if actions.hasNavigateAction() {
-            return .DisclosureIndicator
+            return .disclosureIndicator
         }
-        return .None
+        return .none
     }
     
-    private func selectionStyleForObject(object: NSObject) -> UITableViewCellSelectionStyle {
+    private func selectionStyleForObject(_ object: NSObject) -> UITableViewCellSelectionStyle {
         let actions = self.actionsForObject(object)
         if (actions.hasNavigateAction() || actions.hasTapAction()) {
-            return .Default
+            return .default
         }
-        return .None
+        return .none
     }
     
-    private func actionableObjectForTableView(tableView: UITableView, atIndexPath indexPath: NSIndexPath) -> NSObject? {
+    private func actionableObjectForTableView(_ tableView: UITableView, atIndexPath indexPath: IndexPath) -> NSObject? {
         if let model = tableView.dataSource as? TableModel {
             if let object = model.objectAtPath(indexPath) as? NSObject {
                 return object

@@ -9,34 +9,35 @@
 import Foundation
 
 protocol ModelObjectInterface {
-    typealias ObjectType
-    typealias HeaderType
-    typealias FooterType
-    func objectAtPath(path: NSIndexPath) -> ObjectType
-    func pathForObject(needle: ObjectType) -> NSIndexPath?
+    associatedtype ObjectType
+    associatedtype HeaderType
+    associatedtype FooterType
     
-    func headerAtSection(section: NSInteger) -> HeaderType?
-    func footerAtSection(section: NSInteger) -> FooterType?
+    func objectAtPath(_ indexPath: IndexPath) -> ObjectType
+    func pathForObject(_ object: ObjectType) -> IndexPath?
+    
+    func headerAtSection(_ section: NSInteger) -> HeaderType?
+    func footerAtSection(_ section: NSInteger) -> FooterType?
 }
 
 protocol MutableModelObjectInterface {
-    typealias ObjectType
-    typealias HeaderType
-    typealias FooterType
+    associatedtype ObjectType
+    associatedtype HeaderType
+    associatedtype FooterType
     
-    mutating func addObject(object: ObjectType) -> [NSIndexPath]
-    mutating func addObjects(objects: [ObjectType]) -> [NSIndexPath]
-    mutating func addObject(object: ObjectType, toSection sectionIndex: Int) -> [NSIndexPath]
-    mutating func addObjects(objects: [ObjectType], toSection sectionIndex: Int) -> [NSIndexPath]
-    mutating func removeObjectAtIndexPath(indexPath: NSIndexPath) -> [NSIndexPath]
+    mutating func addObject(_ object: ObjectType) -> [IndexPath]
+    mutating func addObjects(_ objects: [ObjectType]) -> [IndexPath]
+    mutating func addObject(_ object: ObjectType, toSection sectionIndex: Int) -> [IndexPath]
+    mutating func addObjects(_ objects: [ObjectType], toSection sectionIndex: Int) -> [IndexPath]
+    mutating func removeObjectAtIndexPath(_ indexPath: IndexPath) -> [IndexPath]
     
-    mutating func removeSectionAtIndex(sectionIndex: Int) -> NSIndexSet
+    mutating func removeSectionAtIndex(_ sectionIndex: Int) -> NSIndexSet
     
-    mutating func addSectionWithHeader(headerObject: HeaderType) -> NSIndexSet
-    mutating func insertSectionWithHeader(headerObject: HeaderType, atIndex sectionIndex: Int) -> NSIndexSet
+    mutating func addSectionWithHeader(_ headerObject: HeaderType) -> NSIndexSet
+    mutating func insertSectionWithHeader(_ headerObject: HeaderType, atIndex sectionIndex: Int) -> NSIndexSet
     
-    mutating func setFooterForLastSection(footerObject: FooterType) -> NSIndexSet
-    mutating func setFooter(footerObject: FooterType, atIndex sectionIndex: Int) -> NSIndexSet
+    mutating func setFooterForLastSection(_ footerObject: FooterType) -> NSIndexSet
+    mutating func setFooter(_ footerObject: FooterType, atIndex sectionIndex: Int) -> NSIndexSet
 }
 
 /**
@@ -78,7 +79,7 @@ extension Model : ModelObjectInterface {
      :param:   path    A two-index index path referencing a specific object in the receiver.
      :returns: The object found at path.
      */
-    func objectAtPath(path: NSIndexPath) -> T {
+    func objectAtPath(_ path: IndexPath) -> T {
         assert(path.section < self.sections.count, "Section index out of bounds.")
         assert(path.row < self.sections[path.section].objects.count, "Row index out of bounds.")
         return self.sections[path.section].objects[path.row]
@@ -90,23 +91,23 @@ extension Model : ModelObjectInterface {
      :param:   needle    The object to search for in the receiver.
      :returns: The index path of needle, if it was found, otherwise nil.
      */
-    func pathForObject(needle: T) -> NSIndexPath? {
-        for (sectionIndex, section) in self.sections.enumerate() {
-            for (objectIndex, object) in section.objects.enumerate() {
+    func pathForObject(_ needle: T) -> IndexPath? {
+        for (sectionIndex, section) in self.sections.enumerated() {
+            for (objectIndex, object) in section.objects.enumerated() {
                 if object === needle {
-                    return NSIndexPath(forRow: objectIndex, inSection: sectionIndex)
+                    return IndexPath(row: objectIndex, section: sectionIndex)
                 }
             }
         }
         return nil
     }
     
-    func headerAtSection(section: NSInteger) -> H? {
+    func headerAtSection(_ section: NSInteger) -> H? {
         assert(section < self.sections.count, "Section index out of bounds.")
         return self.sections[section].0?.header
     }
     
-    func footerAtSection(section: NSInteger) -> F? {
+    func footerAtSection(_ section: NSInteger) -> F? {
         assert(section < self.sections.count, "Section index out of bounds.")
         return self.sections[section].0?.footer
     }
@@ -120,55 +121,55 @@ extension Model : MutableModelObjectInterface {
      
      - returns: indexPath of the object
      */
-    mutating func addObject(object: T) -> [NSIndexPath] {
+    mutating func addObject(_ object: T) -> [IndexPath] {
         self.ensureMinimalState()
         return self.addObject(object, toSection: self.sections.count - 1)
     }
     
-    mutating func addObjects(objects: [T]) -> [NSIndexPath] {
-        return objects.map({ o in return self.addObject(o) }).reduce([], combine: +)
+    mutating func addObjects(_ objects: [T]) -> [IndexPath] {
+        return objects.map({ o in return self.addObject(o) }).reduce([], +)
     }
     
-    mutating func addObject(object: T, toSection sectionIndex: Int) -> [NSIndexPath] {
+    mutating func addObject(_ object: T, toSection sectionIndex: Int) -> [IndexPath] {
         assert(sectionIndex < self.sections.count, "Section index out of bounds.")
         
         self.sections[sectionIndex].objects.append(object)
-        return [NSIndexPath(forRow: self.sections[sectionIndex].objects.count - 1, inSection: sectionIndex)]
+        return [IndexPath(row: self.sections[sectionIndex].objects.count - 1, section: sectionIndex)]
     }
     
-    mutating func addObjects(objects: [T], toSection sectionIndex: Int) -> [NSIndexPath] {
-        return objects.map { (let object) in self.addObject(object, toSection: sectionIndex) }
-            .reduce([], combine: +)
+    mutating func addObjects(_ objects: [T], toSection sectionIndex: Int) -> [IndexPath] {
+        return objects.map { (object) in self.addObject(object, toSection: sectionIndex) }
+            .reduce([], +)
     }
     
-    mutating func removeObjectAtIndexPath(indexPath: NSIndexPath) -> [NSIndexPath] {
-        self.sections[indexPath.section].objects.removeAtIndex(indexPath.row)
+    mutating func removeObjectAtIndexPath(_ indexPath: IndexPath) -> [IndexPath] {
+        self.sections[indexPath.section].objects.remove(at: indexPath.row)
         return [indexPath]
     }
     
-    mutating func addSectionWithHeader(headerObject: H) -> NSIndexSet {
+    mutating func addSectionWithHeader(_ headerObject: H) -> NSIndexSet {
         self.sections.append(((header: headerObject, nil), objects: []))
         return NSIndexSet(index: self.sections.count - 1)
     }
     
-    mutating func insertSectionWithHeader(headerObject: H, atIndex sectionIndex: Int) -> NSIndexSet {
+    mutating func insertSectionWithHeader(_ headerObject: H, atIndex sectionIndex: Int) -> NSIndexSet {
         assert(sectionIndex < self.sections.count, "Section index out of bounds.")
         
-        self.sections.insert(((header: headerObject, nil), objects: []), atIndex: sectionIndex)
+        self.sections.insert(((header: headerObject, nil), objects: []), at: sectionIndex)
         return NSIndexSet(index: sectionIndex)
     }
     
-    mutating func removeSectionAtIndex(sectionIndex: Int) -> NSIndexSet {
-        self.sections.removeAtIndex(sectionIndex)
+    mutating func removeSectionAtIndex(_ sectionIndex: Int) -> NSIndexSet {
+        self.sections.remove(at: sectionIndex)
         return NSIndexSet(index: sectionIndex)
     }
     
-    mutating func setFooterForLastSection(footerObject: F) -> NSIndexSet {
+    mutating func setFooterForLastSection(_ footerObject: F) -> NSIndexSet {
         self.ensureMinimalState()
         return self.setFooter(footerObject, atIndex: self.sections.count - 1)
     }
     
-    mutating func setFooter(footerObject: F, atIndex sectionIndex: Int) -> NSIndexSet {
+    mutating func setFooter(_ footerObject: F, atIndex sectionIndex: Int) -> NSIndexSet {
         assert(sectionIndex < self.sections.count, "Section index out of bounds.")
         
         if self.sections[sectionIndex].0 == nil {

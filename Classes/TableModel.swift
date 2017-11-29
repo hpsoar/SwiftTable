@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 @objc public protocol TableModelDelegate {
-    func tableModel (tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: NSIndexPath, object: AnyObject) -> UITableViewCell?
+    func tableModel(_ tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: IndexPath, object: AnyObject) -> UITableViewCell?
 }
 
 /**
@@ -59,7 +59,7 @@ extension TableModel : ModelObjectInterface {
      :param:   path    A two-index index path referencing a specific object in the receiver.
      :returns: The object found at path.
      */
-    public func objectAtPath(path: NSIndexPath) -> AnyObject {
+    public func objectAtPath(_ path: IndexPath) -> AnyObject {
         return self.typedModel().objectAtPath(path)
     }
     
@@ -68,15 +68,15 @@ extension TableModel : ModelObjectInterface {
      :param:   needle    The object to search for in the receiver.
      :returns: The index path of needle, if it was found, otherwise nil.
      */
-    public func pathForObject(needle: AnyObject) -> NSIndexPath? {
+    public func pathForObject(_ needle: AnyObject) -> IndexPath? {
         return self.typedModel().pathForObject(needle)
     }
     
-    public func headerAtSection(section: NSInteger) -> AnyObject? {
+    public func headerAtSection(_ section: NSInteger) -> AnyObject? {
         return self.typedModel().headerAtSection(section)
     }
     
-    public func footerAtSection(section: NSInteger) -> AnyObject? {
+    public func footerAtSection(_ section: NSInteger) -> AnyObject? {
         return self.typedModel().footerAtSection(section)
     }
 }
@@ -86,11 +86,11 @@ extension TableModel : UITableViewDataSource {
         return self.typedModel().sections.count
     }
     
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.typedModel().sections[section].objects.count
     }
     
-    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let header = self.typedModel().headerAtSection(section)
         if let title = header as? String {
             return title
@@ -98,7 +98,7 @@ extension TableModel : UITableViewDataSource {
         return nil
     }
     
-    public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+    public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         let footer = self.typedModel().footerAtSection(section)
         if let title = footer as? String {
             return title
@@ -106,11 +106,11 @@ extension TableModel : UITableViewDataSource {
         return nil
     }
     
-    public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return false
     }
     
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let object: AnyObject = self.typedModel().objectAtPath(indexPath)
         return self.delegate!.tableModel(self, cellForTableView: tableView, indexPath: indexPath, object: object)!
     }
