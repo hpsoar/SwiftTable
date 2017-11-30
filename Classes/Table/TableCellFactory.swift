@@ -9,6 +9,12 @@
 import Foundation
 import UIKit
 
+/*
+ * model to view mapping
+ * object->header view/footer view
+ * object->table cell
+ */
+
 public protocol TableSectionHeaderObject : NSObjectProtocol {
     func viewClass() -> UIView.Type
 }

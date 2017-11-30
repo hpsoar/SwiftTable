@@ -9,6 +9,10 @@
 import Foundation
 import UIKit
 
+/*
+ * TableModel is the data Source
+ */
+
 public protocol TableModelDelegate: NSObjectProtocol {
     func tableModel(_ tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: IndexPath, object: AnyObject) -> UITableViewCell?
 }

@@ -8,6 +8,11 @@
 
 import Foundation
 
+/*
+ * Action is a generic indexPath based action router
+ * it binds actions to model objects or model class,
+ * then, you can perform these actions on specific model objects or model class at a specific indexPath
+ */
 public typealias Action = (_ object: AnyObject, _ indexPath: IndexPath) -> Bool
 public typealias BoolTargetSignature = (_ object: NSObject, _ indexPath: IndexPath) -> Bool
 public typealias VoidTargetSignature = (_ object: NSObject, _ indexPath: IndexPath) -> ()

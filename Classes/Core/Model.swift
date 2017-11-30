@@ -8,6 +8,11 @@
 
 import Foundation
 
+/*
+ * Model is a generic indexPath based data Source,
+ * it maintains model objects, with basic add & remove & query,
+ * for header/footer/content object
+ */
 protocol ModelObjectInterface {
     associatedtype ObjectType
     associatedtype HeaderType

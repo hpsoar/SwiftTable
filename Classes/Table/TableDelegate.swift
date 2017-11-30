@@ -8,6 +8,11 @@
 
 import UIKit
 
+/*
+ * more UITableViewDelegate implementations
+ * header/footer/cell height
+ * header view/footer view
+ */
 class TableDelegate: Actions {
     let tableModel: TableModel
     

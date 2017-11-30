@@ -9,6 +9,34 @@
 import Foundation
 import UIKit
 
+/*
+ * extend actions to implement UITableViewDelegate
+ */
+
+extension Actions : UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.accessoryType = .none
+        cell.selectionStyle = .none
+        
+        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
+            _ = self.tableView(tableView, willDisplayCell: cell, forObject: object, atIndexPath: indexPath)
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
+            self.tableView(tableView, didSelectObject: object, atIndexPath: indexPath)
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
+            self.tableView(tableView, accessoryButtonTappedForObject: object, withIndexPath: indexPath)
+        }
+    }
+}
+
+// connect delegate methods to Actions
 extension Actions {
     func tableView(_ tableView: UITableView, willDisplayCell cell: UITableViewCell, forObject object: NSObject, atIndexPath indexPath: IndexPath) -> Bool {
         if !self.isActionableObject(object) {
@@ -42,29 +70,6 @@ extension Actions {
             return
         }
         actions.performDetailAction(object: object, indexPath: indexPath)
-    }
-}
-
-extension Actions : UITableViewDelegate {
-    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.accessoryType = .none
-        cell.selectionStyle = .none
-        
-        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {            
-            _ = self.tableView(tableView, willDisplayCell: cell, forObject: object, atIndexPath: indexPath)
-        }
-    }
-    
-    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
-            self.tableView(tableView, didSelectObject: object, atIndexPath: indexPath)
-        }
-    }
-    
-    public func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        if let object = self.actionableObjectForTableView(tableView, atIndexPath: indexPath) {
-            self.tableView(tableView, accessoryButtonTappedForObject: object, withIndexPath: indexPath)
-        }
     }
 }
 
