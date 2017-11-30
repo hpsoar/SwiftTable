@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AutoHeightTableCellTableViewCell: TableCell {
+class AutoHeightTableCell: TableCell {
     override class func tableView(_ tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:IndexPath) -> CGFloat {
         guard let item = object as? TableItem else {
             return super.tableView(tableView, heightForObject: object, atIndexPath: indexPath)
