@@ -53,7 +53,7 @@ public class TableModel : TypedModel {
 }
 
 extension TableModel : UITableViewDataSource {
-    public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    public func numberOfSections(in tableView: UITableView) -> Int {
         return self.typedModel().sections.count
     }
     
