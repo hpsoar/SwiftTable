@@ -32,8 +32,7 @@ class TableDelegate: TableActions {
         guard let cellClass = object.tableCellClass() as? TableCellProtocol.Type else {
             return cellHeight
         }
-        
-        
+                
         let height = cellClass.tableView(tableView, heightForObject: object, atIndexPath: indexPath)
         if height > 0 {
             cellHeight = height
@@ -53,16 +52,23 @@ class TableDelegate: TableActions {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return self.tableView(tableView, heightForSectionObject: tableModel.headerAtSection(section), inSection: section)
+        return self.tableView(tableView,
+                              heightForSectionObject: tableModel.headerAtSection(section),
+                              inSection: section)
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return self.tableView(tableView, heightForSectionObject: tableModel.footerAtSection(section), inSection: section)
+        return self.tableView(tableView,
+                              heightForSectionObject: tableModel.footerAtSection(section),
+                              inSection: section)
     }
     
     // MARK - private util
     
-    private func tableView(_ tableView: UITableView, heightForSectionObject object: AnyObject?, inSection section: Int) -> CGFloat {
+    private func tableView(_ tableView: UITableView,
+                           heightForSectionObject object: AnyObject?,
+                           inSection section: Int) -> CGFloat {
+        
         if let sectionObject = object as? TableSectionHeaderObject {
             if let cls = sectionObject.viewClass() as? TableSectionHeaderView.Type {
                 return cls.tableView(tableView, heightForObject: sectionObject, atSection: section)

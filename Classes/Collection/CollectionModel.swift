@@ -9,7 +9,16 @@
 import UIKit
 
 public protocol CollectionModelDelegate: NSObjectProtocol {
-    func collectionModel(_ collectionModel: CollectionModel, cellForCollectionView collectionView: UICollectionView, indexPath: IndexPath, object: AnyObject) -> UICollectionViewCell?
+    func collectionModel(_ collectionModel: CollectionModel,
+                         cellForCollectionView collectionView: UICollectionView,
+                         indexPath: IndexPath,
+                         object: AnyObject) -> UICollectionViewCell?
+    
+    func collectionModel(_ collectionModel: CollectionModel,
+                         viewForSupplementaryElementForCollectionView collectionView: UICollectionView,
+                         kind: String,
+                         indexPath: IndexPath,
+                         object: AnyObject) -> UICollectionReusableView?
 }
 
 public class CollectionModel: TypedModel {
@@ -25,7 +34,7 @@ public class CollectionModel: TypedModel {
     }
     
     public convenience init(delegate: CollectionModelDelegate) {
-        self.init(sections: [(nil, objects: [])], delegate: delegate)
+        self.init(sections: [], delegate: delegate)
     }
 }
 
@@ -40,13 +49,16 @@ extension CollectionModel: UICollectionViewDataSource {
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let object: AnyObject = self.typedModel().objectAtPath(indexPath)
+        let object = self.typedModel().objectAtPath(indexPath)
         
         return self.delegate.collectionModel(self, cellForCollectionView: collectionView, indexPath: indexPath, object: object)!
     }
     
     // TODO: supplementary view, currently you can provide by subclass
-//    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//
-//    }
+    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let header = self.typedModel().headerAtSection(indexPath.row) else {
+            return UICollectionReusableView()
+        }
+        return self.delegate.collectionModel(self, viewForSupplementaryElementForCollectionView: collectionView, kind: kind, indexPath: indexPath, object: header)!
+    }
 }

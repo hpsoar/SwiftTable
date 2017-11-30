@@ -16,12 +16,13 @@ import UIKit
 
 // supplementary element
 public protocol CollectionSupplementaryElement : NSObjectProtocol {
-    func viewClass() -> UIView.Type
-    func height() -> CGFloat
+    func viewClass() -> UICollectionReusableView.Type
 }
 
 public protocol CollectionSupplementaryView : NSObjectProtocol {
     func updateWithObject(_ object: CollectionSupplementaryElement)
+    
+    static func reuseIdentifier() -> String
 }
 
 // cell object
@@ -40,6 +41,14 @@ extension UICollectionView {
         for c in cells {
             register(c, forCellWithReuseIdentifier: c.reuseIdentifier())
         }
+    }
+    
+    func registerSectionHeader(cls: CollectionSupplementaryView.Type) {
+        register(cls, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: cls.reuseIdentifier())
+    }
+    
+    func registerSectionFooter(cls: CollectionSupplementaryView.Type) {
+        register(cls, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: cls.reuseIdentifier())
     }
 }
 
@@ -60,6 +69,26 @@ public class CollectionCellFactory : NSObject {
 }
 
 extension CollectionCellFactory : CollectionModelDelegate {
+    public func collectionModel(_ collectionModel: CollectionModel, viewForSupplementaryElementForCollectionView collectionView: UICollectionView, kind: String, indexPath: IndexPath, object: AnyObject) -> UICollectionReusableView? {
+        
+        guard let item = object as? CollectionSupplementaryElement else {
+            return nil
+        }
+        
+        guard let viewClass = item.viewClass() as? CollectionSupplementaryView.Type else {
+            return nil
+        }
+        
+        let identifier = viewClass.reuseIdentifier()
+        let v = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath)
+        
+        if let s = v as? CollectionSupplementaryView {
+            s.updateWithObject(item)
+        }
+        
+        return v
+    }
+    
     public func collectionModel(_ collectionModel: CollectionModel, cellForCollectionView collectionView: UICollectionView, indexPath: IndexPath, object: AnyObject) -> UICollectionViewCell? {
         
         guard let object = object as? CollectionCellObject else {
