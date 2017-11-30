@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+/*
+ */
 
 /*
  * TableModel is the data Source
@@ -16,6 +18,7 @@ import UIKit
 public protocol TableModelDelegate: NSObjectProtocol {
     func tableModel(_ tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: IndexPath, object: AnyObject) -> UITableViewCell?
 }
+
 
 /**
  An instance of TableModel is meant to be the data source for a UITableView.
@@ -31,16 +34,13 @@ public protocol TableModelDelegate: NSObjectProtocol {
  - recycles or instantiates the cell, and
  - returns the cell to the table view.
  */
-public class TableModel : NSObject {
-    public typealias TableCellObjectModel = Model<AnyObject, AnyObject, AnyObject>
+public class TableModel : TypedModel {
     
-    let model: TableCellObjectModel
-    weak var delegate: TableModelDelegate?
+    weak var delegate: TableModelDelegate!
     
-    public init(sections: [TableCellObjectModel.Section], delegate: TableModelDelegate) {
-        self.model = TableCellObjectModel(sections: sections)
+    public init(sections: [CellObjectModel.Section], delegate: TableModelDelegate) {
         self.delegate = delegate
-        super.init()
+        super.init(sections: sections)
     }
     
     public convenience init(list: [AnyObject], delegate: TableModelDelegate) {
@@ -49,40 +49,7 @@ public class TableModel : NSObject {
     
     public convenience init(delegate: TableModelDelegate) {
         self.init(sections: [(nil, objects: [])], delegate: delegate)
-    }
-    
-    func typedModel() -> TableCellObjectModel {
-        return self.model
-    }
-}
-
-extension TableModel : ModelObjectInterface {
-    /**
-     Returns the object at the given index path.
-     Providing a non-existent index path will throw an exception.
-     :param:   path    A two-index index path referencing a specific object in the receiver.
-     :returns: The object found at path.
-     */
-    public func objectAtPath(_ path: IndexPath) -> AnyObject {
-        return self.typedModel().objectAtPath(path)
-    }
-    
-    /**
-     Returns the index path for an object matching needle if it exists in the receiver.
-     :param:   needle    The object to search for in the receiver.
-     :returns: The index path of needle, if it was found, otherwise nil.
-     */
-    public func pathForObject(_ needle: AnyObject) -> IndexPath? {
-        return self.typedModel().pathForObject(needle)
-    }
-    
-    public func headerAtSection(_ section: NSInteger) -> AnyObject? {
-        return self.typedModel().headerAtSection(section)
-    }
-    
-    public func footerAtSection(_ section: NSInteger) -> AnyObject? {
-        return self.typedModel().footerAtSection(section)
-    }
+    }        
 }
 
 extension TableModel : UITableViewDataSource {
@@ -116,15 +83,14 @@ extension TableModel : UITableViewDataSource {
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return false
     }
-
+    
     // TODO: handle can move, currently you can support it by subclass TableModel
     public func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return false
     }
-
-    
+        
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let object: AnyObject = self.typedModel().objectAtPath(indexPath)
-        return self.delegate!.tableModel(self, cellForTableView: tableView, indexPath: indexPath, object: object)!
+        return self.delegate.tableModel(self, cellForTableView: tableView, indexPath: indexPath, object: object)!
     }
 }

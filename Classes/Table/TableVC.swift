@@ -16,14 +16,7 @@ class TableVC: UIViewController {
         didSet {
             tableView.dataSource = tableModel
         }
-    }
-    
-    var mutableTableModel: MutableTableModel? {
-        if let t = tableModel as? MutableTableModel {
-            return t
-        }
-        return nil
-    }
+    }        
     
     // delegate
     var tableDelegate: TableDelegate? {

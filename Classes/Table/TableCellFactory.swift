@@ -89,10 +89,7 @@ extension TableCellFactory {
     /**
      Returns a cell for a given object.
      */
-    private func cell(_ tableCellClass: UITableViewCell.Type, tableView: UITableView, indexPath: IndexPath, object: TableCellObject?) -> UITableViewCell? {
-        guard let object = object else {
-            return nil
-        }
+    private func cell(_ tableCellClass: UITableViewCell.Type, tableView: UITableView, indexPath: IndexPath, object: TableCellObject) -> UITableViewCell? {        
         
         guard let cellClass = tableCellClass as? TableCellProtocol.Type else {
             return nil
