@@ -9,41 +9,46 @@
 import UIKit
 
 class TableDelegate: Actions {
-    var tableModel: TableModel?        
+    let tableModel: TableModel
     
-    init(tableModel: TableModel?) {
+    init(tableModel: TableModel) {
         self.tableModel = tableModel
         super.init()
     }
     
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return self.createSectionViewForSectionObject(tableModel?.headerAtSection(section))
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return self.createSectionViewForSectionObject(tableModel.headerAtSection(section))
     }
     
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return self.createSectionViewForSectionObject(tableModel?.footerAtSection(section))
-    }
-    
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return self.createSectionViewForSectionObject(tableModel.footerAtSection(section))
+    }        
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var cellHeight = tableView.rowHeight
-        if tableModel != nil {
-            let object = tableModel!.objectAtPath(indexPath) as! TableCellObject
-            let cellClass = object.tableCellClass() as? TableCellProtocol.Type
-            if cellClass != nil {
-                let height = cellClass!.tableView(tableView, heightForObject: object, atIndexPath: indexPath)
-                if height > 0 {
-                    cellHeight = height
-                }
-            }
+        
+        guard let object = tableModel.objectAtPath(indexPath) as? TableCellObject else {
+            return cellHeight
         }
+        
+        guard let cellClass = object.tableCellClass() as? TableCellProtocol.Type else {
+            return cellHeight
+        }
+        
+        
+        let height = cellClass.tableView(tableView, heightForObject: object, atIndexPath: indexPath)
+        if height > 0 {
+            cellHeight = height
+        }
+        
         return cellHeight
     }
     
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 0
     }
     
-    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0
     }
     

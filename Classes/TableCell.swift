@@ -26,7 +26,23 @@ class TableItem : NSObject, TableCellObject {
 
 class TableCell: UITableViewCell, TableCellProtocol {
 
-    weak var item: TableCellObject?        
+    weak var item: TableCellObject?
+    
+    class func tableView(_ tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:IndexPath) -> CGFloat {
+        return 44.0
+    }
+    
+    static func reuseIdentifierForObject(_ object: TableCellObject) -> String {
+        guard let identifier = object.reuseIdentifier() else {
+            
+            var identifier = NSStringFromClass(self)
+            let style = object.cellStyle()
+            identifier.append(String(style.rawValue))
+            return identifier
+        }
+        
+        return identifier
+    }
 
     func updateWithObject(_ object: TableCellObject) -> Bool {
         self.item = object

@@ -49,28 +49,6 @@ public protocol TableCellProtocol: NSObjectProtocol {
     static func reuseIdentifierForObject(_ object: TableCellObject) -> String
 }
 
-extension TableCellProtocol {
-    func updateWithObject(object: TableCellObject) -> Bool {
-        return true
-    }
-    
-    static func tableView(_ tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:IndexPath) -> CGFloat {
-        return 44.0
-    }
-    
-    static func reuseIdentifierForObject(_ object: TableCellObject) -> String {
-        guard let identifier = object.reuseIdentifier() else {
-            
-            var identifier = NSStringFromClass(self)
-            let style = object.cellStyle()
-            identifier.append(String(style.rawValue))
-            return identifier
-        }
-        
-        return identifier
-    }
-}
-
 /**
  The TableCellFactory class is the binding logic between Objects and Cells and should be used as the
  delegate for a TableModel.
