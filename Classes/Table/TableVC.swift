@@ -11,6 +11,7 @@ import UIKit
 class TableVC: UIViewController {
     var tableView: UITableView!
     
+    // Model
     var tableModel: TableModel? {
         didSet {
             tableView.dataSource = tableModel
@@ -24,11 +25,16 @@ class TableVC: UIViewController {
         return nil
     }
     
+    // delegate
     var tableDelegate: TableDelegate? {
         didSet {
             tableView.delegate = tableDelegate
         }
     }
+    
+    // TODO: refresh ui interface
+    
+    // TODO: data loader interface
     
     override func viewDidLoad() {
         super.viewDidLoad()
