@@ -28,7 +28,7 @@ class TableDelegate: Actions {
         var cellHeight = tableView.rowHeight
         if tableModel != nil {
             let object = tableModel!.objectAtPath(indexPath) as! TableCellObject
-            let cellClass = object.tableCellClass() as? TableCell.Type
+            let cellClass = object.tableCellClass() as? TableCellProtocol.Type
             if cellClass != nil {
                 let height = cellClass!.tableView(tableView, heightForObject: object, atIndexPath: indexPath)
                 if height > 0 {
@@ -47,7 +47,7 @@ class TableDelegate: Actions {
         return 0
     }
     
-    private func createSectionViewForSectionObject(_ object: AnyObject?) -> UIView? {
+    private func createSectionViewForSectionObject(_ object: Any?) -> UIView? {
         if let sectionObject = object as? TableSectionHeaderObject {
             let viewClass = sectionObject.viewClass()
             let view = viewClass.init(frame: .zero)

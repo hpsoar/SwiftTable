@@ -9,11 +9,11 @@
 import Foundation
 import UIKit
 
-@objc public protocol TableSectionHeaderObject {
+public protocol TableSectionHeaderObject : NSObjectProtocol {
     func viewClass() -> UIView.Type
 }
 
-@objc public protocol TableSectionHeaderView {
+public protocol TableSectionHeaderView : NSObjectProtocol {
     func updateViewWithObject(_ object: TableSectionHeaderObject)
     
     static func tableView(_ tableView: UITableView, heightForObject object:TableSectionHeaderObject, atSection section:NSInteger)
@@ -22,7 +22,7 @@ import UIKit
 typealias TableSectionFooterObject = TableSectionHeaderObject
 typealias TableSectionFooterView = TableSectionHeaderView
 
-@objc public protocol TableCellObject {
+public protocol TableCellObject: NSObjectProtocol {
     func tableCellClass() -> UITableViewCell.Type
     func cellStyle() -> UITableViewCellStyle
     func reuseIdentifier() -> String?
@@ -41,19 +41,33 @@ extension TableCellObject {
     }
 }
 
-@objc public protocol TableCell {
-    func updateCellWithObject(_ object: TableCellObject) -> Bool
+public protocol TableCellProtocol: NSObjectProtocol {
+    func updateWithObject(_ object: TableCellObject) -> Bool
     
     static func tableView(_ tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:IndexPath) -> CGFloat;
+    
+    static func reuseIdentifierForObject(_ object: TableCellObject) -> String
 }
 
-extension TableCell {
-    func updateCellWithObject(object: TableCellObject) -> Bool {
+extension TableCellProtocol {
+    func updateWithObject(object: TableCellObject) -> Bool {
         return true
     }
     
     static func tableView(_ tableView: UITableView, heightForObject object:TableCellObject, atIndexPath indexPath:IndexPath) -> CGFloat {
         return 44.0
+    }
+    
+    static func reuseIdentifierForObject(_ object: TableCellObject) -> String {
+        guard let identifier = object.reuseIdentifier() else {
+            
+            var identifier = NSStringFromClass(self)
+            let style = object.cellStyle()
+            identifier.append(String(style.rawValue))
+            return identifier
+        }
+        
+        return identifier
     }
 }
 
@@ -76,7 +90,11 @@ public class TableCellFactory : NSObject {
 extension TableCellFactory : TableModelDelegate {
     public func tableModel(_ tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: IndexPath, object: AnyObject) -> UITableViewCell? {
         
-        return self.cell(object.tableCellClass(), tableView: tableView, indexPath: indexPath, object: object as? TableCellObject)
+        guard let object = object as? TableCellObject else {
+            return nil
+        }
+        
+        return self.cell(object.tableCellClass(), tableView: tableView, indexPath: indexPath, object: object)
     }
 }
 
@@ -91,9 +109,11 @@ extension TableCellFactory {
             return nil
         }
         
-        guard let identifier = cellIdentifier(tableCellClass, object: object) else {
+        guard let cellClass = tableCellClass as? TableCellProtocol.Type else {
             return nil
         }
+        
+        let identifier = cellClass.reuseIdentifierForObject(object)
         
         let style = object.cellStyle()
 
@@ -105,23 +125,11 @@ extension TableCellFactory {
         
         // Provide the object to the cell
         
-        if let tableCell = cell as? TableCell {
-            _ = tableCell.updateCellWithObject(object)
+        if let tableCell = cell as? TableCellProtocol {
+            _ = tableCell.updateWithObject(object)
         }
         
         return cell!
-    }
-    
-    private func cellIdentifier(_ tableCellClass: UITableViewCell.Type, object: TableCellObject) -> String? {
-        var identifier = object.reuseIdentifier()
-        
-        // Append object class to reuse identifier
-        if identifier == nil {
-            identifier = NSStringFromClass(tableCellClass)
-            let style = object.cellStyle()
-            identifier!.append(String(style.rawValue))
-        }
-        return identifier
     }
 }
 

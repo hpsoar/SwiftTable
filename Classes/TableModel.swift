@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-@objc public protocol TableModelDelegate {
+public protocol TableModelDelegate: NSObjectProtocol {
     func tableModel(_ tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: IndexPath, object: AnyObject) -> UITableViewCell?
 }
 
@@ -39,7 +39,7 @@ public class TableModel : NSObject {
         super.init()
     }
     
-    public convenience init(list: [TableCellObject], delegate: TableModelDelegate) {
+    public convenience init(list: [AnyObject], delegate: TableModelDelegate) {
         self.init(sections: [(nil, objects: list)], delegate: delegate)
     }
     
