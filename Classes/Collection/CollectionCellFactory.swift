@@ -35,6 +35,14 @@ public protocol CollectionCellProtocol: NSObjectProtocol {
     static func reuseIdentifier() -> String
 }
 
+extension UICollectionView {
+    func registerCollectionCells(cells: [CollectionCellProtocol.Type]) {
+        for c in cells {
+            register(c, forCellWithReuseIdentifier: c.reuseIdentifier())
+        }
+    }
+}
+
 /**
  The TableCellFactory class is the binding logic between Objects and Cells and should be used as the
  delegate for a TableModel.
