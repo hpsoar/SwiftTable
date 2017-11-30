@@ -28,8 +28,15 @@ class CollectionVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView = UICollectionView(frame: view.bounds)
+        view.backgroundColor = UIColor.white
+        
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+        collectionView.backgroundColor = UIColor.white
         view.addSubview(collectionView)
+    }
+    
+    func createLayout() -> UICollectionViewLayout! {
+        return nil
     }
     
     override func didReceiveMemoryWarning() {

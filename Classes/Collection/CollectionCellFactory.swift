@@ -26,14 +26,13 @@ public protocol CollectionSupplementaryView : NSObjectProtocol {
 
 // cell object
 public protocol CollectionCellObject: NSObjectProtocol {
-    func cellClass() -> UICollectionViewCell.Type
-    func reuseIdentifier() -> String?
+    func cellClass() -> UICollectionViewCell.Type    
 }
 
 public protocol CollectionCellProtocol: NSObjectProtocol {
     func updateWithObject(_ object: CollectionCellObject) -> Bool
     
-    static func reuseIdentifierForObject(_ object: CollectionCellObject) -> String
+    static func reuseIdentifier() -> String
 }
 
 /**
@@ -75,7 +74,7 @@ extension CollectionCellFactory {
             return nil
         }
         
-        let identifier = cellClass.reuseIdentifierForObject(object)
+        let identifier = cellClass.reuseIdentifier()
         
         // Recycle or create the cell
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
