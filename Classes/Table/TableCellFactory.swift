@@ -21,9 +21,9 @@ public protocol TableSectionHeaderObject : NSObjectProtocol {
 }
 
 public protocol TableSectionHeaderView : NSObjectProtocol {
-    func updateViewWithObject(_ object: TableSectionHeaderObject)
+    func updateWithObject(_ object: TableSectionHeaderObject)
     
-    static func tableView(_ tableView: UITableView, heightForObject object:TableSectionHeaderObject, atSection section:NSInteger)
+    static func tableView(_ tableView: UITableView, heightForObject object:TableSectionHeaderObject, atSection section:NSInteger) -> CGFloat
 }
 
 typealias TableSectionFooterObject = TableSectionHeaderObject

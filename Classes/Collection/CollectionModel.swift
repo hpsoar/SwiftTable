@@ -45,6 +45,7 @@ extension CollectionModel: UICollectionViewDataSource {
         return self.delegate.collectionModel(self, cellForCollectionView: collectionView, indexPath: indexPath, object: object)!
     }
     
+    // TODO: supplementary view, currently you can provide by subclass
 //    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 //
 //    }

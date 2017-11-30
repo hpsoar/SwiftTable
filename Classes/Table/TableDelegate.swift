@@ -74,7 +74,7 @@ class TableDelegate: TableActions {
             let viewClass = sectionObject.viewClass()
             let view = viewClass.init(frame: .zero)
             if let headerView = view as? TableSectionHeaderView {
-                headerView.updateViewWithObject(sectionObject)
+                headerView.updateWithObject(sectionObject)
             }
             return view
         }

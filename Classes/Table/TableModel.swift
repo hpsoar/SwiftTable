@@ -48,7 +48,7 @@ public class TableModel : TypedModel {
     }
     
     public convenience init(delegate: TableModelDelegate) {
-        self.init(sections: [(nil, objects: [])], delegate: delegate)
+        self.init(sections: [], delegate: delegate)
     }        
 }
 
