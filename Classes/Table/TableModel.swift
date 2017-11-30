@@ -112,10 +112,16 @@ extension TableModel : UITableViewDataSource {
         return nil
     }
     
-    // TODO: handle can edit
+    // TODO: handle can edit, currently you can support it by subclass TableModel
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return false
     }
+
+    // TODO: handle can move, currently you can support it by subclass TableModel
+    public func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let object: AnyObject = self.typedModel().objectAtPath(indexPath)
