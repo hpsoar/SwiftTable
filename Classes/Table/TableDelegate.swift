@@ -13,22 +13,15 @@ import UIKit
  * header/footer/cell height
  * header view/footer view
  */
-class TableDelegate: Actions {
-    let tableModel: TableModel
+class TableDelegate: TableActions {
+    private let tableModel: TableModel        
     
     init(tableModel: TableModel) {
         self.tableModel = tableModel
         super.init()
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return self.createSectionViewForSectionObject(tableModel.headerAtSection(section))
-    }
-    
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return self.createSectionViewForSectionObject(tableModel.footerAtSection(section))
-    }        
-
+    // cell height
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var cellHeight = tableView.rowHeight
         
@@ -49,11 +42,30 @@ class TableDelegate: Actions {
         return cellHeight
     }
     
+    // MARK - header & footer
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return self.createSectionViewForSectionObject(tableModel.headerAtSection(section))
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return self.createSectionViewForSectionObject(tableModel.footerAtSection(section))
+    }
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
+        return self.sectionViewHeightForSectionObject(tableModel.headerAtSection(section))
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return self.sectionViewHeightForSectionObject(tableModel.footerAtSection(section))
+    }
+    
+    // MARK - private util
+    
+    private func sectionViewHeightForSectionObject(_ object: Any?) -> CGFloat {
+        if let sectionObject = object as? TableSectionHeaderObject {
+            return sectionObject.height()
+        }
         return 0
     }
     
@@ -67,9 +79,5 @@ class TableDelegate: Actions {
             return view
         }
         return nil
-    }
-    
-    override func forwardingTarget(for aSelector: Selector) -> Any? {
-        return nil
-    }
+    }        
 }

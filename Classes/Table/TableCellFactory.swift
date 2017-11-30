@@ -17,6 +17,7 @@ import UIKit
 
 public protocol TableSectionHeaderObject : NSObjectProtocol {
     func viewClass() -> UIView.Type
+    func height() -> CGFloat
 }
 
 public protocol TableSectionHeaderView : NSObjectProtocol {

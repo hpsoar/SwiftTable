@@ -95,6 +95,7 @@ extension TableModel : UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        // if you want a section header title, use String as Header Type
         let header = self.typedModel().headerAtSection(section)
         if let title = header as? String {
             return title
@@ -103,6 +104,7 @@ extension TableModel : UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        // if you want a section footer title, use String as Footer Type
         let footer = self.typedModel().footerAtSection(section)
         if let title = footer as? String {
             return title
@@ -110,6 +112,7 @@ extension TableModel : UITableViewDataSource {
         return nil
     }
     
+    // TODO: handle can edit
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return false
     }
