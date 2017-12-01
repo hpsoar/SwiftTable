@@ -11,8 +11,8 @@ import UIKit
 class TableItem : NSObject, TableCellObject {
     var cellHeight: CGFloat = 0.0
     
-    func tableCellClass() -> UITableViewCell.Type {
-        return UITableViewCell.self
+    func tableCellClass() -> UITableViewCell.Type? {
+        return nil
     }
     
     func cellStyle() -> UITableViewCellStyle {

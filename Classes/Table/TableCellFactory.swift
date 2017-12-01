@@ -30,22 +30,9 @@ typealias TableSectionFooterObject = TableSectionHeaderObject
 typealias TableSectionFooterView = TableSectionHeaderView
 
 public protocol TableCellObject: NSObjectProtocol {
-    func tableCellClass() -> UITableViewCell.Type
+    func tableCellClass() -> UITableViewCell.Type?
     func cellStyle() -> UITableViewCellStyle
     func reuseIdentifier() -> String?
-}
-
-extension TableCellObject {
-    func tableCellClass() -> UITableViewCell.Type {
-        return UITableViewCell.self
-    }
-    
-    func cellStyle() -> UITableViewCellStyle {
-        return UITableViewCellStyle.default
-    }
-    func reuseIdentifier() -> String? {
-        return nil
-    }
 }
 
 public protocol TableCellProtocol: NSObjectProtocol {
@@ -89,9 +76,10 @@ extension TableCellFactory {
     /**
      Returns a cell for a given object.
      */
-    private func cell(_ tableCellClass: UITableViewCell.Type, tableView: UITableView, indexPath: IndexPath, object: TableCellObject) -> UITableViewCell? {        
+    private func cell(_ tableCellClass: UITableViewCell.Type?, tableView: UITableView, indexPath: IndexPath, object: TableCellObject) -> UITableViewCell? {
         
         guard let cellClass = tableCellClass as? TableCellProtocol.Type else {
+            print("\(tableCellClass!) is doesn't conform TableCellProtocol")
             return nil
         }
         
@@ -102,7 +90,7 @@ extension TableCellFactory {
         // Recycle or create the cell
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
         if cell == nil {
-            cell = tableCellClass.init(style: style, reuseIdentifier: identifier)
+            cell = tableCellClass!.init(style: style, reuseIdentifier: identifier)
         }
         
         // Provide the object to the cell
