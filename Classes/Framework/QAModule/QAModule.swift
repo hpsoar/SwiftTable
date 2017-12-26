@@ -13,9 +13,7 @@ protocol QAModuleDependency: NSObjectProtocol {
 }
 
 class QAModule: Module {
-    static var dependency: QAModuleDependency! {
-        return container.resolve(QAModuleDependency.self)
-    }
+    static var dependency: QAModuleDependency!
     
     static func showNews(id: String, navigator: Navigator) {
         dependency.showNews(id: id, navigator: navigator)

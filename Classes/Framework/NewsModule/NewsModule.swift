@@ -16,9 +16,7 @@ class NewsModule: Module {
     
     // MARK - dependency
     
-    static var dependecy: NewsModuleDependency! {
-        return container.resolve(NewsModuleDependency.self)
-    }
+    static var dependecy: NewsModuleDependency!
     
     static func showProblem(id: String, navigator: Navigator) {
         dependecy.showProblem(id: id, navigator: navigator)
